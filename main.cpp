@@ -117,6 +117,40 @@ bool validateOptions(const TunningOptions  &options) {
   return nErrors == 0;
 }
 
+void runSequential(
+  const int nItems,
+  Producer & producer,
+  Consumer & consumer
+) {
+  
+  producer.run(nItems);
+  consumer.run(nItems);
+}
+
+void runStraddle(
+  const int nItems,
+  Producer & producer,
+  Consumer & consumer
+) {
+  const int stepSize = 10000;
+  const int consumerSize = stepSize - 100;
+  int nSteps = nItems/ stepSize;
+  
+  int nLeftOvers = 0;
+  int i;
+  for(i=0; i<nSteps; i++) {
+    producer.run(stepSize);
+    consumer.run(consumerSize);
+    nLeftOvers +=  stepSize - consumerSize; 
+  }
+  
+  if(nLeftOvers > 0) {
+    consumer.run(nLeftOvers);
+  }
+  
+}
+
+
 int main(int argc, char *argv[]) {
   if(argc < 4) {
     showUsage(argc, argv);
@@ -134,11 +168,18 @@ int main(int argc, char *argv[]) {
   Producer producer(&queueWrapper);
   Consumer consumer(&queueWrapper, options.isVerbose);
 
-  producer.run(options.nItems);
-  consumer.run(options.nItems);
+  // runSequential(
+  //   options.nItems, 
+  //   producer, 
+  //   consumer);
+
+  runStraddle(
+    options.nItems, 
+    producer, 
+    consumer);
 
   if(!queueWrapper.empty()) {
-    cout<<"queue is not empty"<<endl;
+    cerr<<"queue is not empty"<<endl;
     return 3;
   }
   return 0;
