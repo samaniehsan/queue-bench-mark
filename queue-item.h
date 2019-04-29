@@ -5,7 +5,7 @@
 
 class QueueItem {
     int index;
-    char description[11];
+    char description[22];
 public:
     QueueItem();
     QueueItem(
@@ -14,6 +14,9 @@ public:
     QueueItem(const QueueItem &);
 
     QueueItem& operator=(const QueueItem& other);
+
+    int getIndex()const;
+    void getDescription(char* sz) const;
 };
 
 #endif
