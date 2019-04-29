@@ -7,9 +7,9 @@
 #include <queue>
 
 enum QueueType {
-    QueueType_DoubleEnded,
-    QueueType_CircularArray,
-    QueueType_DoubleStacks
+    QueueType_DoubleEnded=1,
+    QueueType_CircularArray=2,
+    QueueType_DoubleStacks=3
 };
 
 class QueueWrapper {

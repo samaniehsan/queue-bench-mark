@@ -9,7 +9,17 @@ QueueWrapper::QueueWrapper(
     m_queue(0),
     m_circularQueue(0), 
     m_doubleStackQueue(0) {
-     
+    switch(m_queueType) {
+        case QueueType_DoubleEnded:
+            m_queue = new std::queue<QueueItem>();
+        break;
+        case QueueType_CircularArray:
+            m_circularQueue = new CircularQueue();
+        break;
+        case QueueType_DoubleStacks:
+            m_doubleStackQueue = new DoubleStackedQueue(); 
+        break;
+    }
 }
 QueueWrapper::~QueueWrapper() {
     if(m_queue != 0) {

@@ -1,8 +1,7 @@
 #include "circular-queue.h"
 #include <cassert>
 
-using namespace std;
-
+//credit
 //much of this code inspired or copied from
 //dotnet core implmentation of circular queue.
 
@@ -25,19 +24,20 @@ bool CircularQueue::empty()const {
 }
 
 void CircularQueue::enQueue(const QueueItem & item) {
-  arr[tail] = item;
   if(size == capacity) {
-       int newcapacity = capacity * (long)growFactor / 100;
-       if (newcapacity < capacity + minimumGrow) {
+       int newcapacity = capacity * ((int)growFactor / 100);
+       if (newcapacity < (capacity + minimumGrow)) {
           newcapacity = capacity + minimumGrow;
        }
      setCapacity(newcapacity);
   }
+
+  arr[tail] = item;
+  moveNext(tail);
   size++;
 }
 
 void CircularQueue::deQueue(QueueItem & rItem) {
-    head;
     if (size == 0)
     {
         // this is really bad.
@@ -61,27 +61,30 @@ void CircularQueue::copyArray(
     int i=0;
     for(i=0,srcIndex = sourceIndex; srcIndex <length;i++, srcIndex++) {
         int normalizedDestIndex = destinationIndex + i;
-        sourceArray[srcIndex] = destinationArray[normalizedDestIndex];
+        destinationArray[normalizedDestIndex] = sourceArray[srcIndex]; 
     } 
 }
 
 void CircularQueue::setCapacity(const int newCapacity) {
      QueueItem* newarray = new QueueItem[newCapacity];
      if (size > 0) {
+
         if (head < tail)
         {
             copyArray(arr, head, newarray, 0, size);
+            delete [] arr;
         }
         else
         {
-            copyArray(arr, head, newarray, 0, capacity - head);
-            copyArray(arr, 0, newarray, capacity - head, tail);
+            copyArray(arr, head, newarray, 0, size - head);
+            copyArray(arr, 0, newarray, size - head, tail);
+            delete [] arr;
         }
     }
-
     arr = newarray;
+    capacity = newCapacity;
     head = 0;
-    tail = (size == capacity) ? 0 : size;
+    tail = (size == newCapacity) ? 0 : size;
 }
 
 // Increments the index wrapping it if necessary.
