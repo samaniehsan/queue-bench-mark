@@ -117,6 +117,14 @@ bool validateOptions(const TunningOptions  &options) {
   return nErrors == 0;
 }
 
+void runProducerOnly(
+  const int nItems,
+  Producer & producer
+) {
+  
+  producer.run(nItems);
+}
+
 void runSequential(
   const int nItems,
   Producer & producer,
@@ -162,25 +170,11 @@ int main(int argc, char *argv[]) {
   if(!validateOptions(options))
     return 2;
 
-  QueueWrapper queueWrapper(
+  QueueWrapper * queueWrapper = new QueueWrapper(
     options.queueType);
 
-  Producer producer(&queueWrapper);
-  Consumer consumer(&queueWrapper, options.isVerbose);
+  Producer producer(queueWrapper);
+  runProducerOnly(options.nItems,producer);
 
-  // runSequential(
-  //   options.nItems, 
-  //   producer, 
-  //   consumer);
-
-  runStraddle(
-    options.nItems, 
-    producer, 
-    consumer);
-
-  if(!queueWrapper.empty()) {
-    cerr<<"queue is not empty"<<endl;
-    return 3;
-  }
   return 0;
 }
